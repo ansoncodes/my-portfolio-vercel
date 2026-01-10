@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Github, Linkedin, Mail, Phone, MapPin, ExternalLink, Terminal, ChevronDown } from 'lucide-react';
+import { Github, Linkedin, Mail, Phone, MapPin, ExternalLink, Terminal, ChevronDown, ChevronUp } from 'lucide-react';
 
 function App() {
   const [scrolled, setScrolled] = useState(false);
@@ -178,7 +178,13 @@ function App() {
       </section>
 
       <section id="about" className="min-h-screen flex items-center justify-center px-4 py-20 relative z-10">
-        <div className="max-w-4xl w-full">
+        <div className="max-w-4xl w-full space-y-8">
+          <div className="flex justify-center animate-bounce">
+            <a href="#home" className="text-zinc-600 hover:text-emerald-400 transition">
+              <ChevronUp size={32} />
+            </a>
+          </div>
+          
           <TerminalWindow title="anson@portfolio: ~/about">
             <div className="space-y-6">
               <div className="text-emerald-400">$ cat about.txt</div>
@@ -198,11 +204,23 @@ function App() {
               </div>
             </div>
           </TerminalWindow>
+          
+          <div className="flex justify-center animate-bounce">
+            <a href="#skills" className="text-zinc-600 hover:text-emerald-400 transition">
+              <ChevronDown size={32} />
+            </a>
+          </div>
         </div>
       </section>
 
       <section id="skills" className="min-h-screen flex items-center justify-center px-4 py-20 relative z-10">
-        <div className="max-w-4xl w-full">
+        <div className="max-w-4xl w-full space-y-8">
+          <div className="flex justify-center animate-bounce">
+            <a href="#about" className="text-zinc-600 hover:text-emerald-400 transition">
+              <ChevronUp size={32} />
+            </a>
+          </div>
+          
           <TerminalWindow title="anson@portfolio: ~/skills">
             <div className="space-y-6">
               <div className="text-emerald-400">$ ls -la skills/</div>
@@ -265,11 +283,23 @@ function App() {
               </div>
             </div>
           </TerminalWindow>
+          
+          <div className="flex justify-center animate-bounce">
+            <a href="#projects" className="text-zinc-600 hover:text-emerald-400 transition">
+              <ChevronDown size={32} />
+            </a>
+          </div>
         </div>
       </section>
 
       <section id="projects" className="min-h-screen flex items-center justify-center px-4 py-20 relative z-10">
-        <div className="max-w-4xl w-full">
+        <div className="max-w-4xl w-full space-y-8">
+          <div className="flex justify-center animate-bounce">
+            <a href="#skills" className="text-zinc-600 hover:text-emerald-400 transition">
+              <ChevronUp size={32} />
+            </a>
+          </div>
+          
           <TerminalWindow title="anson@portfolio: ~/projects">
             <div className="space-y-6">
               <div className="text-emerald-400">$ cat projects.json</div>
@@ -317,11 +347,23 @@ function App() {
               </div>
             </div>
           </TerminalWindow>
+          
+          <div className="flex justify-center animate-bounce">
+            <a href="#experience" className="text-zinc-600 hover:text-emerald-400 transition">
+              <ChevronDown size={32} />
+            </a>
+          </div>
         </div>
       </section>
 
       <section id="experience" className="min-h-screen flex items-center justify-center px-4 py-20 relative z-10">
-        <div className="max-w-4xl w-full">
+        <div className="max-w-4xl w-full space-y-8">
+          <div className="flex justify-center animate-bounce">
+            <a href="#projects" className="text-zinc-600 hover:text-emerald-400 transition">
+              <ChevronUp size={32} />
+            </a>
+          </div>
+          
           <TerminalWindow title="anson@portfolio: ~/experience">
             <div className="space-y-6">
               <div className="text-emerald-400">$ git log --work-history</div>
@@ -360,11 +402,23 @@ function App() {
               </div>
             </div>
           </TerminalWindow>
+          
+          <div className="flex justify-center animate-bounce">
+            <a href="#contact" className="text-zinc-600 hover:text-emerald-400 transition">
+              <ChevronDown size={32} />
+            </a>
+          </div>
         </div>
       </section>
 
       <section id="contact" className="min-h-screen flex items-center justify-center px-4 py-20 relative z-10">
         <div className="max-w-4xl w-full space-y-8">
+          <div className="flex justify-center animate-bounce">
+            <a href="#experience" className="text-zinc-600 hover:text-emerald-400 transition">
+              <ChevronUp size={32} />
+            </a>
+          </div>
+          
           <TerminalWindow title="anson@portfolio: ~/contact">
             <div className="space-y-6">
               <div className="text-emerald-400">$ cat contact.vcf</div>
