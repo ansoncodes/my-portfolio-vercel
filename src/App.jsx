@@ -31,7 +31,7 @@ function App() {
           {title}
         </div>
       </div>
-      <div className="bg-black/90 backdrop-blur-sm border-x border-b border-zinc-800 rounded-b-lg p-6 font-mono">
+      <div className="bg-black/90 backdrop-blur-sm border-x border-b border-zinc-800 rounded-b-lg p-4 sm:p-6 font-mono">
         {children}
       </div>
     </div>
@@ -121,8 +121,8 @@ function App() {
         }} />
       </div>
 
-      <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-300">
-        <div className="bg-black/80 backdrop-blur-md border border-zinc-800 rounded-full px-6 py-3 flex gap-6 text-sm font-mono">
+      <nav className="fixed top-2 sm:top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] sm:w-auto">
+      <div className="bg-black/80 backdrop-blur-md border border-zinc-800 rounded-full px-3 sm:px-6 py-2 sm:py-3 flex gap-3 sm:gap-6 text-xs sm:text-sm font-mono overflow-x-auto">
           <a href="#home" className="text-zinc-400 hover:text-emerald-400 transition">home</a>
           <a href="#about" className="text-zinc-400 hover:text-emerald-400 transition">about</a>
           <a href="#skills" className="text-zinc-400 hover:text-emerald-400 transition">skills</a>
@@ -141,8 +141,8 @@ function App() {
                 <span>$ whoami</span>
               </div>
               <div className="space-y-3 pl-6">
-                <h1 className="text-4xl md:text-6xl font-bold text-white">M A Anson</h1>
-                <p className="text-xl md:text-2xl text-cyan-400">Full-Stack Developer</p>
+                <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-white">M A Anson</h1>
+                <p className="text-lg sm:text-xl md:text-2xl text-cyan-400">Full-Stack Developer</p>
                 <p className="text-zinc-400 flex items-center gap-2">
                   <MapPin size={16} className="text-emerald-400" />
                   Kochi, Kerala
@@ -152,18 +152,18 @@ function App() {
                 <p className="text-zinc-300 mb-4">$ echo $EXPERTISE</p>
                 <p className="text-zinc-400 pl-4">Django • React • REST APIs • WebSockets • JWT Auth</p>
               </div>
-              <div className="flex gap-4 pl-6">
-                <a href="https://github.com/ansoncodes" target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-zinc-800/50 hover:bg-emerald-500/20 border border-zinc-700 hover:border-emerald-500/50 rounded transition flex items-center gap-2">
+             <div className="flex flex-wrap gap-3 sm:gap-4 pl-6">
+                <a href="https://github.com/ansoncodes" target="_blank" rel="noopener noreferrer" className="px-3 sm:px-4 py-2 bg-zinc-800/50 hover:bg-emerald-500/20 border border-zinc-700 hover:border-emerald-500/50 rounded transition flex items-center gap-2 text-sm">
                   <Github size={16} />
-                  <span className="text-sm">GitHub</span>
+                  <span>GitHub</span>
                 </a>
-                <a href="https://www.linkedin.com/in/anson-codes/" target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-zinc-800/50 hover:bg-cyan-500/20 border border-zinc-700 hover:border-cyan-500/50 rounded transition flex items-center gap-2">
+                <a href="https://www.linkedin.com/in/anson-codes/" target="_blank" rel="noopener noreferrer" className="px-3 sm:px-4 py-2 bg-zinc-800/50 hover:bg-cyan-500/20 border border-zinc-700 hover:border-cyan-500/50 rounded transition flex items-center gap-2 text-sm">
                   <Linkedin size={16} />
-                  <span className="text-sm">LinkedIn</span>
+                  <span>LinkedIn</span>
                 </a>
-                <a href="mailto:ansonantony783@gmail.com" className="px-4 py-2 bg-zinc-800/50 hover:bg-purple-500/20 border border-zinc-700 hover:border-purple-500/50 rounded transition flex items-center gap-2">
+                <a href="mailto:ansonantony783@gmail.com" className="px-3 sm:px-4 py-2 bg-zinc-800/50 hover:bg-purple-500/20 border border-zinc-700 hover:border-purple-500/50 rounded transition flex items-center gap-2 text-sm">
                   <Mail size={16} />
-                  <span className="text-sm">Email</span>
+                  <span>Email</span>
                 </a>
               </div>
             </div>
