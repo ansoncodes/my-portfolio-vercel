@@ -400,7 +400,7 @@ function App() {
           </TerminalWindow>
 
           <div className="text-center text-zinc-600 text-sm font-mono">
-            <p>© 2025 M A Anson • Built with React & Tailwind CSS</p>
+            <p>© 2026 M A Anson • Built with React & Tailwind CSS</p>
           </div>
         </div>
       </section>
