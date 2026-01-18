@@ -371,7 +371,7 @@ function App() {
               <div className="space-y-6 pl-6">
                 <div className="space-y-2">
                   <p className="text-cyan-400 font-semibold">Python Full Stack Developer Intern</p>
-                  <p className="text-zinc-400">SMECLabs, Kochi</p>
+                  <p className="text-zinc-400">SMEC Technologies, Kochi</p>
                   <ul className="text-sm text-zinc-500 space-y-1 pl-4">
                     <li>• Built REST APIs with Django REST Framework</li>
                     <li>• Implemented JWT authentication & role-based permissions</li>
