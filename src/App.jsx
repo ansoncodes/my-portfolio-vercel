@@ -1,62 +1,72 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Github, Linkedin, Mail, Phone, MapPin, ExternalLink, Terminal, ChevronDown, GitBranch } from 'lucide-react';
+import { ArrowUpRight, ArrowRight } from 'lucide-react';
 
-const NAV_LINKS = ['home', 'about', 'skills', 'projects', 'experience', 'contact'];
+/* ---------- data ---------- */
 
-const TYPEWRITER_WORDS = [
-  'Full-Stack and AI Developer',
-  'Python · Django · React.js',
-  'Building AI-powered web apps',
+const NAV_LINKS = [
+  { id: 'work', label: 'Work' },
+  { id: 'services', label: 'Services' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'contact', label: 'Contact' },
 ];
 
-const Prompt = ({ cmd, dir = '~' }) => (
-  <div className="flex flex-wrap items-baseline gap-x-1.5 font-mono">
-    <span className="text-emerald-400">anson@portfolio</span>
-    <span className="text-zinc-600">:</span>
-    <span className="text-zinc-400">{dir}</span>
-    <span className="text-zinc-600">$</span>
-    <span className="text-zinc-200">{cmd}</span>
-  </div>
-);
+const SERVICES = [
+  { title: 'Backend Development', items: ['Django', 'DRF', 'REST APIs', 'JWT', 'WebSockets'] },
+  { title: 'Frontend Development', items: ['React.js', 'Next.js', 'Tailwind', 'JavaScript', 'HTML / CSS'] },
+  { title: 'AI Engineering', items: ['LangGraph', 'LangChain', 'RAG', 'ChromaDB', 'Groq'] },
+  { title: 'Tooling & Infra', items: ['Git', 'GitHub', 'Docker', 'AWS', 'PostgreSQL', 'MySQL'] },
+];
 
-const TypeWriter = ({ words }) => {
-  const [wordIndex, setWordIndex] = useState(0);
-  const [text, setText] = useState('');
-  const [deleting, setDeleting] = useState(false);
+const PROJECTS = [
+  {
+    name: 'Akila Eyewear',
+    tag: 'E-commerce · Virtual Try-On',
+    desc: 'Full-stack eyewear platform with a real-time virtual try-on built on MediaPipe face tracking and Three.js, plus JWT auth and role-based access.',
+    tech: ['Django REST Framework', 'Next.js', 'MediaPipe', 'Three.js'],
+    href: 'https://github.com/ansoncodes/akila-eyewear',
+  },
+  {
+    name: 'Text-To-SQL AI',
+    tag: 'AI Agent · RAG',
+    desc: 'A LangGraph agent that turns natural language into SQL — relevance checks, RAG schema retrieval with ChromaDB, and read-only safety guards.',
+    tech: ['LangGraph', 'ChromaDB', 'Groq', 'Streamlit'],
+    href: 'https://github.com/ansoncodes/Text-To-SQL-AI',
+  },
+  {
+    name: '404 CarCare',
+    tag: 'Multi-tenant SaaS',
+    desc: 'Automotive service platform with three role-based portals, real-time job tracking, booking-scoped chat and automated Django Signals notifications.',
+    tech: ['Django REST Framework', 'Next.js', 'TailwindCSS'],
+    href: 'https://github.com/ansoncodes/404-carcare',
+  },
+];
 
-  useEffect(() => {
-    const word = words[wordIndex % words.length];
-    let delay = deleting ? 35 : 70;
-    let action;
-    if (!deleting && text === word) {
-      delay = 2200;
-      action = () => setDeleting(true);
-    } else if (deleting && text === '') {
-      delay = 400;
-      action = () => {
-        setDeleting(false);
-        setWordIndex((i) => (i + 1) % words.length);
-      };
-    } else {
-      action = () => setText(deleting ? word.slice(0, text.length - 1) : word.slice(0, text.length + 1));
-    }
-    const timeout = setTimeout(action, delay);
-    return () => clearTimeout(timeout);
-  }, [text, deleting, wordIndex, words]);
+const EXPERIENCE = [
+  { role: 'Software Developer', org: 'SMEC Technologies', date: '2026 — Now' },
+  { role: 'Python Developer Intern', org: 'SMEC Technologies', date: '2026' },
+  { role: 'Full-Stack Developer Trainee', org: 'SMEC Technologies', date: '2025' },
+  { role: 'Summer Intern', org: 'Cisco Networking Academy', date: '2024' },
+];
 
-  return (
-    <span>
-      {text}
-      <Cursor />
+const CONTACTS = [
+  { label: 'Email', value: 'ansonantony783@gmail.com', href: 'mailto:ansonantony783@gmail.com' },
+  { label: 'LinkedIn', value: 'in/anson-codes', href: 'https://www.linkedin.com/in/anson-codes/' },
+  { label: 'GitHub', value: 'github.com/ansoncodes', href: 'https://github.com/ansoncodes' },
+  { label: 'Phone', value: '+91 7907121020', href: 'tel:+917907121020' },
+];
+
+/* ---------- helpers ---------- */
+
+const RollingText = ({ children, className = '' }) => (
+  <span className={`roll ${className}`}>
+    <span className="roll-inner">
+      <span>{children}</span>
+      <span aria-hidden>{children}</span>
     </span>
-  );
-};
-
-const Cursor = () => (
-  <span className="cursor-blink inline-block w-[2px] h-[1.05em] bg-emerald-400/90 align-[-0.15em] ml-0.5" />
+  </span>
 );
 
-const Reveal = ({ children, className = '' }) => {
+const Reveal = ({ children, delay = 0, className = '', as: Tag = 'div' }) => {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
 
@@ -70,405 +80,364 @@ const Reveal = ({ children, className = '' }) => {
           observer.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.12 }
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
   return (
-    <div ref={ref} className={`reveal ${visible ? 'reveal-visible' : ''} ${className}`}>
+    <Tag
+      ref={ref}
+      className={`reveal ${visible ? 'reveal-visible' : ''} ${className}`}
+      style={{ '--reveal-delay': `${delay}ms` }}
+    >
       {children}
-    </div>
+    </Tag>
   );
 };
 
-const TerminalWindow = ({ title, children, className = '' }) => (
-  <div className={`w-full ${className}`}>
-    <div className="relative rounded-xl overflow-hidden border border-zinc-800/80 bg-black/80 backdrop-blur-md terminal-shadow">
-      <div className="bg-gradient-to-b from-zinc-800/80 to-zinc-900/90 border-b border-zinc-800 px-4 py-3 flex items-center gap-2">
-        <div className="flex gap-2 group shrink-0">
-          <div className="w-3 h-3 rounded-full bg-red-500 hover:bg-red-400 transition flex items-center justify-center">
-            <span className="text-[9px] leading-none font-bold text-red-950 opacity-0 group-hover:opacity-100 transition">×</span>
-          </div>
-          <div className="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-400 transition flex items-center justify-center">
-            <span className="text-[9px] leading-none font-bold text-yellow-950 opacity-0 group-hover:opacity-100 transition">−</span>
-          </div>
-          <div className="w-3 h-3 rounded-full bg-green-500 hover:bg-green-400 transition flex items-center justify-center">
-            <span className="text-[9px] leading-none font-bold text-green-950 opacity-0 group-hover:opacity-100 transition">+</span>
-          </div>
-        </div>
-        <div className="flex-1 text-center text-sm text-zinc-500 font-mono truncate">{title}</div>
-        <div className="w-[52px] shrink-0" />
-      </div>
-
-      <div className="relative scanlines p-5 sm:p-8 font-mono">{children}</div>
-
-      <div className="border-t border-zinc-800/80 bg-zinc-900/60 px-4 py-1.5 flex items-center justify-between font-mono text-[10px] sm:text-xs text-zinc-600">
-        <span className="flex items-center gap-1 text-emerald-500/70">
-          <GitBranch size={11} />
-          main
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/80 animate-pulse" />
-          online
-        </span>
-      </div>
-    </div>
+const SectionLabel = ({ index, children }) => (
+  <div className="flex items-center gap-3 eyebrow text-[#111]">
+    <span className="text-[var(--blue)]">{index}</span>
+    <span className="w-8 h-px bg-[#111]/30" />
+    <span>{children}</span>
   </div>
 );
 
-const Background = () => (
-  <div className="fixed inset-0 -z-10 overflow-hidden">
-    <div className="absolute top-1/4 -left-20 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl animate-float-orb-1"></div>
-    <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-float-orb-2"></div>
-
-    <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.05)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000,transparent)]"></div>
-
-    <div
-      className="absolute inset-0 opacity-[0.06] mix-blend-overlay"
-      style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-      }}
-    />
-  </div>
-);
+/* ---------- sections ---------- */
 
 const Nav = () => {
-  const [active, setActive] = useState('home');
+  const [hidden, setHidden] = useState(false);
+  const last = useRef(0);
 
   useEffect(() => {
     const onScroll = () => {
-      const doc = document.documentElement;
-      // At (or near) the bottom of the page, the last section is active
-      if (window.innerHeight + window.scrollY >= doc.scrollHeight - 2) {
-        setActive(NAV_LINKS[NAV_LINKS.length - 1]);
-        return;
-      }
-      const pos = window.scrollY + window.innerHeight * 0.35;
-      let current = NAV_LINKS[0];
-      for (const id of NAV_LINKS) {
-        const el = document.getElementById(id);
-        if (el && el.offsetTop <= pos) current = id;
-      }
-      setActive(current);
+      const y = window.scrollY;
+      setHidden(y > 400 && y > last.current);
+      last.current = y;
     };
-    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-    };
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return (
-    <nav className="fixed top-2 sm:top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] sm:w-auto">
-      <div className="bg-black/80 backdrop-blur-md border border-zinc-800 rounded-full px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between sm:justify-start gap-3 sm:gap-6 text-xs sm:text-sm font-mono overflow-x-auto no-scrollbar">
-        <span className="hidden sm:inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-        {NAV_LINKS.map((id) => (
-          <a
-            key={id}
-            href={`#${id}`}
-            className={`transition shrink-0 ${
-              active === id ? 'text-emerald-400' : 'text-zinc-400 hover:text-emerald-400'
-            }`}
-          >
-            {id}
-          </a>
-        ))}
-      </div>
-    </nav>
-  );
-};
+    <header
+      className={`fixed top-0 inset-x-0 z-50 transition-transform duration-500 ${
+        hidden ? '-translate-y-full' : 'translate-y-0'
+      }`}
+    >
+      <nav className="mx-auto max-w-7xl px-5 sm:px-8 py-4 sm:py-5 flex items-center justify-between">
+        <a href="#top" className="font-display font-800 text-lg tracking-tight" style={{ fontWeight: 800 }}>
+          ANSON<span className="text-[var(--blue)]">.</span>
+        </a>
 
-const Section = ({ id, title, children }) => (
-  <section id={id} className="px-4 py-20 sm:py-24 relative z-10 scroll-mt-14">
-    <div className="max-w-3xl mx-auto">
-      <Reveal>
-        <p className="font-mono text-sm text-emerald-400 mb-2">~/{id}</p>
-        <h2 className="text-2xl sm:text-3xl font-bold text-white mb-10">{title}</h2>
-        {children}
-      </Reveal>
-    </div>
-  </section>
-);
-
-const SKILL_GROUPS = [
-  { label: 'Backend', skills: ['Django', 'DRF', 'REST APIs', 'JWT', 'WebSockets'] },
-  { label: 'Frontend', skills: ['React.js', 'HTML', 'CSS', 'Tailwind', 'JavaScript'] },
-  { label: 'Languages', skills: ['Python', 'JavaScript', 'SQL'] },
-  { label: 'Databases', skills: ['MySQL', 'PostgreSQL'] },
-  { label: 'DevTools', skills: ['Git', 'GitHub', 'Docker', 'AWS', 'Postman', 'Figma'] },
-];
-
-const EXPERIENCE = [
-  {
-    role: 'Software Developer',
-    org: 'SMEC Technologies · Full-time',
-    date: 'Jun 2026 - Present · Kochi, Kerala',
-    points: ['Building web applications with Django & Django REST Framework'],
-  },
-  {
-    role: 'Python Developer Intern',
-    org: 'SMEC Technologies · Internship',
-    date: 'Jan 2026 - Mar 2026 · Kochi, Kerala',
-    points: [
-      'Developed and maintained web applications using Python & Django',
-      'Built and integrated REST APIs with PostgreSQL/MySQL databases',
-      'Implemented authentication, authorization & role-based access control',
-      'Participated in code reviews, bug fixing & Git workflows',
-    ],
-  },
-  {
-    role: 'Full-Stack Developer Trainee',
-    org: 'SMEC Technologies · Apprenticeship',
-    date: 'Jun 2025 - Dec 2025 · Kochi, Kerala',
-    points: [
-      'Built backend-focused web apps with Django & DRF, React frontends',
-      'Designed database models, REST APIs & role-based access control',
-      'Worked with asynchronous messaging for notifications',
-      'Collaborated in Agile teams using Git/GitHub & code reviews',
-    ],
-  },
-  {
-    role: 'Summer Intern',
-    org: 'Cisco Networking Academy · Internship',
-    date: 'May 2024 - Jul 2024 · Remote',
-    points: [
-      'Core security concepts, threat analysis & network defense',
-      'Hands-on simulations with Cisco Packet Tracer',
-    ],
-  },
-];
-
-const CERTIFICATIONS = ['AWS DeepRacer', 'Cybersecurity Essentials', 'Google Cloud', 'Big Data', 'IoT Edge ML', 'Packet Tracer'];
-
-const PROJECTS = [
-  {
-    name: 'Akila Eyewear',
-    desc: 'Full-stack eyewear e-commerce platform with product catalog, cart, wishlist, orders, reviews, and an admin console. Features a real-time virtual try-on built with MediaPipe face tracking and Three.js, plus JWT authentication with role-based access control.',
-    tech: ['Django REST Framework', 'Next.js', 'MediaPipe', 'Three.js', 'JWT', 'Razorpay'],
-    github: 'https://github.com/ansoncodes/akila-eyewear'
-  },
-  {
-    name: 'Text-To-SQL AI',
-    desc: 'Natural language to SQL agent built with LangGraph — routes questions through relevance checks, RAG-based schema retrieval with ChromaDB, SQL generation, and execution with stateful retry logic. Enforces read-only SQL safety by blocking destructive statements before execution.',
-    tech: ['LangGraph', 'LangChain', 'ChromaDB', 'Sentence Transformers', 'Groq', 'Streamlit'],
-    github: 'https://github.com/ansoncodes/Text-To-SQL-AI'
-  },
-  {
-    name: '404 CarCare',
-    desc: 'Multi-tenant automotive service platform for airport branches with three role-based portals — Admin, Supervisor, and Customer. Real-time job stage tracking with a live timeline, booking-scoped live chat, and automated notifications powered by Django Signals.',
-    tech: ['Django REST Framework', 'Next.js', 'TailwindCSS'],
-    github: 'https://github.com/ansoncodes/404-carcare'
-  }
-];
-
-function App() {
-  return (
-    <div className="min-h-screen bg-zinc-950 text-white relative overflow-hidden font-sans">
-      <Background />
-      <Nav />
-
-      {/* Hero — the terminal is the hook */}
-      <section id="home" className="min-h-screen flex items-center justify-center px-4 pt-24 pb-16 relative z-10">
-        <div className="max-w-3xl w-full space-y-10">
-          <Reveal>
-            <TerminalWindow title="anson@portfolio: ~">
-              <div className="space-y-6">
-                <div className="flex items-center gap-2">
-                  <Terminal size={18} className="text-emerald-400 shrink-0" />
-                  <Prompt cmd="whoami" />
-                </div>
-                <div className="space-y-3 pl-6">
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">M A Anson</h1>
-                  <p className="text-lg sm:text-xl text-zinc-300 min-h-[1.75rem]">
-                    <TypeWriter words={TYPEWRITER_WORDS} />
-                  </p>
-                  <p className="text-zinc-500 flex items-center gap-2 text-sm">
-                    <MapPin size={15} className="text-emerald-400" />
-                    Kochi, Kerala, India
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-3 pl-6 pt-2">
-                  <a href="https://github.com/ansoncodes" target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-zinc-800/50 hover:bg-emerald-500/10 border border-zinc-700 hover:border-emerald-500/50 rounded transition flex items-center gap-2 text-sm">
-                    <Github size={15} />
-                    <span>GitHub</span>
-                  </a>
-                  <a href="https://www.linkedin.com/in/anson-codes/" target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-zinc-800/50 hover:bg-emerald-500/10 border border-zinc-700 hover:border-emerald-500/50 rounded transition flex items-center gap-2 text-sm">
-                    <Linkedin size={15} />
-                    <span>LinkedIn</span>
-                  </a>
-                  <a href="mailto:ansonantony783@gmail.com" className="px-4 py-2 bg-zinc-800/50 hover:bg-emerald-500/10 border border-zinc-700 hover:border-emerald-500/50 rounded transition flex items-center gap-2 text-sm">
-                    <Mail size={15} />
-                    <span>Email</span>
-                  </a>
-                </div>
-                <div className="pl-6">
-                  <Prompt cmd={<Cursor />} />
-                </div>
-              </div>
-            </TerminalWindow>
-          </Reveal>
-
-          <div className="flex justify-center">
-            <a href="#about" className="text-zinc-700 hover:text-emerald-400 transition animate-bounce">
-              <ChevronDown size={28} />
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+          {NAV_LINKS.map((l) => (
+            <a key={l.id} href={`#${l.id}`} className="text-[#111]/70 hover:text-[#111] transition-colors">
+              <RollingText>{l.label}</RollingText>
             </a>
-          </div>
-        </div>
-      </section>
-
-      <Section id="about" title="About">
-        <div className="space-y-4 text-zinc-400 leading-relaxed">
-          <p>Full-stack developer specializing in Django REST Framework and React.js.</p>
-          <p>I build scalable web applications with clean, modular code — and I'm passionate about REST APIs, authentication systems, and seamless UX.</p>
-        </div>
-
-        <div className="mt-12">
-          <p className="font-mono text-xs text-zinc-500 uppercase tracking-widest mb-4">Education</p>
-          <p className="text-white font-medium">BTech in Computer Science and Engineering (AI & ML)</p>
-          <p className="text-zinc-400 mt-1">Karunya Institute of Technology and Sciences</p>
-          <p className="font-mono text-sm text-zinc-500 mt-1">Aug 2021 - May 2025</p>
-        </div>
-      </Section>
-
-      <Section id="skills" title="Skills">
-        <div className="grid sm:grid-cols-2 gap-x-12 gap-y-10">
-          {SKILL_GROUPS.map((group) => (
-            <div key={group.label}>
-              <p className="font-mono text-xs text-zinc-500 uppercase tracking-widest mb-4">{group.label}</p>
-              <div className="flex flex-wrap gap-2">
-                {group.skills.map((skill) => (
-                  <span key={skill} className="font-mono text-xs px-3 py-1.5 bg-zinc-900/70 border border-zinc-800 hover:border-emerald-500/40 hover:text-emerald-300 rounded text-zinc-300 transition">
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      <Section id="projects" title="Projects">
-        <div className="divide-y divide-zinc-800/70">
-          {PROJECTS.map((project) => (
-            <div key={project.name} className="py-10 first:pt-0 last:pb-0">
-              <div className="flex items-start justify-between flex-wrap gap-3">
-                <h3 className="text-lg sm:text-xl font-semibold text-white">{project.name}</h3>
-                <div className="flex gap-4">
-                  {project.github && (
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 font-mono text-sm text-zinc-400 hover:text-emerald-400 transition"
-                    >
-                      <Github size={15} />
-                      <span>Code</span>
-                    </a>
-                  )}
-                  {project.live && (
-                    <a
-                      href={project.live}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 font-mono text-sm text-zinc-400 hover:text-emerald-400 transition"
-                    >
-                      <ExternalLink size={15} />
-                      <span>Live</span>
-                    </a>
-                  )}
-                </div>
-              </div>
-              <p className="mt-3 text-zinc-400 leading-relaxed">{project.desc}</p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {project.tech.map((tech) => (
-                  <span key={tech} className="font-mono text-xs px-2.5 py-1 bg-zinc-900/70 border border-zinc-800 rounded text-zinc-500">
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </div>
           ))}
         </div>
 
         <a
+          href="#contact"
+          className="group flex items-center gap-2 rounded-full bg-[#111] text-[var(--cream)] text-sm font-medium pl-5 pr-2 py-2 hover:bg-[var(--blue)] transition-colors"
+        >
+          <RollingText>Get in touch</RollingText>
+          <span className="grid place-items-center w-7 h-7 rounded-full bg-[var(--cream)] text-[#111] transition-transform group-hover:rotate-45">
+            <ArrowUpRight size={15} />
+          </span>
+        </a>
+      </nav>
+    </header>
+  );
+};
+
+const Hero = () => (
+  <section id="top" className="relative px-5 sm:px-8 pt-32 sm:pt-40 pb-16">
+    <div className="mx-auto max-w-7xl">
+      <Reveal className="flex items-center justify-between eyebrow text-[#111]/60 mb-10">
+        <span>Full-Stack &amp; AI Developer</span>
+        <span className="hidden sm:block">© 2026 — Kochi, India</span>
+      </Reveal>
+
+      <Reveal delay={80} className="flex items-center gap-3 mb-6">
+        <span className="inline-block w-2.5 h-2.5 rounded-full bg-[var(--blue)] animate-pulse" />
+        <span className="text-base sm:text-lg text-[#111]/70">Hey, I'm Anson 👋</span>
+      </Reveal>
+
+      <Reveal delay={140}>
+        <h1 className="display-hero text-[15vw] sm:text-[12vw] lg:text-[10.5rem] leading-[0.9]">
+          From idea
+          <br />
+          to <span className="text-[var(--blue)]">deployment.</span>
+        </h1>
+      </Reveal>
+
+      <div className="mt-12 grid lg:grid-cols-[1.2fr_1fr] gap-8 lg:gap-16 items-end">
+        <Reveal delay={220} as="p" className="max-w-xl text-lg sm:text-xl text-[#111]/70 leading-relaxed">
+          I'm a full-stack and AI developer crafting clean, scalable web
+          applications with Django, React and modern AI — built to move fast,
+          stay simple, and perform in the real world.
+        </Reveal>
+
+        <Reveal delay={300} className="flex flex-wrap gap-4 lg:justify-end">
+          <a
+            href="#work"
+            className="group flex items-center gap-2 rounded-full bg-[#111] text-[var(--cream)] font-medium pl-6 pr-2 py-3 hover:bg-[var(--blue)] transition-colors"
+          >
+            <RollingText>View my work</RollingText>
+            <span className="grid place-items-center w-8 h-8 rounded-full bg-[var(--cream)] text-[#111] transition-transform group-hover:translate-y-0.5">
+              <ArrowRight size={16} />
+            </span>
+          </a>
+          <a
+            href="https://github.com/ansoncodes?tab=repositories"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center rounded-full border border-[#111]/20 font-medium px-6 py-3 hover:border-[#111] transition-colors"
+          >
+            <RollingText>GitHub</RollingText>
+          </a>
+        </Reveal>
+      </div>
+    </div>
+  </section>
+);
+
+const Services = () => (
+  <section id="services" className="px-5 sm:px-8 py-24 sm:py-32">
+    <div className="mx-auto max-w-7xl">
+      <Reveal>
+        <SectionLabel index="01">Services</SectionLabel>
+      </Reveal>
+      <Reveal delay={80} as="h2" className="display-lg text-5xl sm:text-7xl mt-6 max-w-3xl">
+        What I build for the web.
+      </Reveal>
+
+      <div className="mt-16 grid sm:grid-cols-2 gap-x-16 gap-y-14">
+        {SERVICES.map((s, i) => (
+          <Reveal key={s.title} delay={i * 80} className="border-t border-[#111]/15 pt-6">
+            <div className="flex items-baseline justify-between gap-4">
+              <h3 className="font-display text-2xl sm:text-3xl font-semibold">{s.title}</h3>
+              <span className="eyebrow text-[#111]/40">0{i + 1}</span>
+            </div>
+            <div className="mt-5 flex flex-wrap gap-2.5">
+              {s.items.map((item) => (
+                <span
+                  key={item}
+                  className="text-sm px-3.5 py-1.5 rounded-full border border-[#111]/15 text-[#111]/70 hover:border-[var(--blue)] hover:text-[var(--blue)] transition-colors"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+const Work = () => (
+  <section id="work" className="px-5 sm:px-8 py-24 sm:py-32">
+    <div className="mx-auto max-w-7xl">
+      <Reveal className="flex items-end justify-between flex-wrap gap-4">
+        <div>
+          <SectionLabel index="02">Featured Work</SectionLabel>
+          <h2 className="display-lg text-5xl sm:text-7xl mt-6">Selected projects.</h2>
+        </div>
+        <a
           href="https://github.com/ansoncodes?tab=repositories"
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-12 inline-flex items-center gap-2 font-mono text-sm text-emerald-400 hover:text-emerald-300 transition"
+          className="group flex items-center gap-2 text-sm font-medium"
         >
-          <span>view all repositories</span>
-          <span aria-hidden>→</span>
+          <RollingText>View all work</RollingText>
+          <ArrowUpRight size={16} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-[var(--blue)]" />
         </a>
-      </Section>
+      </Reveal>
 
-      <Section id="experience" title="Experience">
-        <div className="border-l border-zinc-800 pl-8 space-y-12">
-          {EXPERIENCE.map((job) => (
-            <div key={job.role + job.date} className="relative">
-              <span className="absolute -left-[37px] top-2 w-2 h-2 rounded-full bg-emerald-500" />
-              <h3 className="text-white font-semibold">{job.role}</h3>
-              <p className="text-zinc-400 mt-1">{job.org}</p>
-              <p className="font-mono text-sm text-zinc-500 mt-1">{job.date}</p>
-              <ul className="mt-3 space-y-1.5 text-sm text-zinc-400">
-                {job.points.map((point) => (
-                  <li key={point} className="flex gap-2">
-                    <span className="text-emerald-500/70 shrink-0">•</span>
-                    <span>{point}</span>
-                  </li>
-                ))}
-              </ul>
+      <div className="mt-14 border-t border-[#111]/15">
+        {PROJECTS.map((p, i) => (
+          <Reveal key={p.name} delay={i * 60}>
+            <a
+              href={p.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group block border-b border-[#111]/15 py-8 sm:py-10 transition-colors hover:bg-[#111] hover:text-[var(--cream)] -mx-5 sm:-mx-8 px-5 sm:px-8"
+            >
+              <div className="flex items-start justify-between gap-6">
+                <div className="flex items-baseline gap-4 sm:gap-8">
+                  <span className="eyebrow text-[var(--blue)] pt-2">0{i + 1}</span>
+                  <div>
+                    <h3 className="display-lg text-4xl sm:text-6xl">{p.name}</h3>
+                    <p className="mt-2 eyebrow text-current/50">{p.tag}</p>
+                  </div>
+                </div>
+                <span className="grid place-items-center w-11 h-11 sm:w-14 sm:h-14 rounded-full border border-current/25 shrink-0 transition-transform group-hover:rotate-45 group-hover:border-[var(--blue)] group-hover:bg-[var(--blue)] group-hover:text-white">
+                  <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                </span>
+              </div>
+              <div className="mt-6 grid lg:grid-cols-[1fr_auto] gap-4 lg:gap-16 items-end pl-0 sm:pl-16">
+                <p className="max-w-xl text-base sm:text-lg text-current/70 leading-relaxed">{p.desc}</p>
+                <div className="flex flex-wrap gap-2 lg:justify-end">
+                  {p.tech.map((t) => (
+                    <span key={t} className="text-xs px-3 py-1 rounded-full border border-current/25 text-current/70">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </a>
+          </Reveal>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+const Experience = () => (
+  <section id="experience" className="px-5 sm:px-8 py-24 sm:py-32">
+    <div className="mx-auto max-w-7xl grid lg:grid-cols-[0.8fr_1.2fr] gap-12 lg:gap-16">
+      <div>
+        <Reveal>
+          <SectionLabel index="03">About</SectionLabel>
+        </Reveal>
+        <Reveal delay={80} as="h2" className="display-lg text-4xl sm:text-6xl mt-6">
+          Building since 2021.
+        </Reveal>
+        <Reveal delay={160} as="p" className="mt-6 text-lg text-[#111]/70 leading-relaxed max-w-md">
+          BTech in Computer Science &amp; Engineering (AI &amp; ML), Karunya Institute
+          of Technology and Sciences — 2021 to 2025. Now shipping production web
+          apps and AI systems at SMEC Technologies, Kochi.
+        </Reveal>
+      </div>
+
+      <div className="lg:pt-2">
+        {EXPERIENCE.map((job, i) => (
+          <Reveal key={job.role} delay={i * 70}>
+            <div className="group flex items-baseline justify-between gap-4 border-t border-[#111]/15 py-6 last:border-b">
+              <div>
+                <h3 className="font-display text-xl sm:text-2xl font-semibold group-hover:text-[var(--blue)] transition-colors">
+                  {job.role}
+                </h3>
+                <p className="mt-1 text-[#111]/55">{job.org}</p>
+              </div>
+              <span className="eyebrow text-[#111]/50 shrink-0">{job.date}</span>
             </div>
-          ))}
-        </div>
+          </Reveal>
+        ))}
+      </div>
+    </div>
+  </section>
+);
 
-        <div className="mt-14">
-          <p className="font-mono text-xs text-zinc-500 uppercase tracking-widest mb-4">Certifications</p>
-          <div className="flex flex-wrap gap-2">
-            {CERTIFICATIONS.map((cert) => (
-              <span key={cert} className="font-mono text-xs px-3 py-1.5 bg-zinc-900/70 border border-zinc-800 hover:border-emerald-500/40 hover:text-emerald-300 rounded text-zinc-400 transition">
-                {cert}
+const Contact = () => (
+  <section id="contact" className="px-5 sm:px-8 pt-24 sm:pt-32">
+    <div className="mx-auto max-w-7xl">
+      <Reveal>
+        <SectionLabel index="04">Contact</SectionLabel>
+      </Reveal>
+
+      <Reveal delay={80} as="h2" className="display-hero text-[16vw] sm:text-[13vw] lg:text-[13rem] mt-8 leading-[0.85]">
+        Let's talk.
+      </Reveal>
+
+      <Reveal delay={160} as="p" className="mt-8 text-lg sm:text-xl text-[#111]/70 max-w-xl leading-relaxed">
+        Have a project in mind, a role to fill, or just want to say hi? I'm open
+        to new opportunities and collaborations.
+      </Reveal>
+
+      <div className="mt-14 grid sm:grid-cols-2 gap-x-16 gap-y-8 border-t border-[#111]/15 pt-10">
+        {CONTACTS.map((c, i) => (
+          <Reveal key={c.label} delay={i * 60}>
+            <a
+              href={c.href}
+              target={c.href.startsWith('http') ? '_blank' : undefined}
+              rel="noopener noreferrer"
+              className="group flex items-center justify-between border-b border-[#111]/15 pb-4"
+            >
+              <span>
+                <span className="block eyebrow text-[#111]/45 mb-1">{c.label}</span>
+                <span className="font-display text-2xl sm:text-3xl font-semibold group-hover:text-[var(--blue)] transition-colors">
+                  {c.value}
+                </span>
               </span>
+              <ArrowUpRight className="w-6 h-6 text-[#111]/40 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-[var(--blue)]" />
+            </a>
+          </Reveal>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+const FOOTER_LINKS = [{ id: 'top', label: 'Home' }, ...NAV_LINKS];
+
+const Footer = () => (
+  <footer className="relative mt-28 bg-[#111] text-[var(--cream)] overflow-hidden rounded-t-[2rem] sm:rounded-t-[2.5rem]">
+    {/* ghost wordmark */}
+    <span className="pointer-events-none select-none absolute left-1/2 -translate-x-1/2 bottom-[-3.5vw] display-hero text-[27vw] leading-none text-white/[0.05] whitespace-nowrap">
+      ANSON
+    </span>
+
+    <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8 pt-16 sm:pt-20 pb-40 sm:pb-56">
+      <div className="grid gap-12 md:grid-cols-[1.2fr_1fr_1fr]">
+        <h2 className="display-lg text-4xl sm:text-5xl leading-[1.03]">
+          Scaling ideas
+          <br />
+          into products.
+        </h2>
+
+        <div>
+          <p className="text-lg mb-5">/Quick links</p>
+          <div className="flex flex-wrap gap-2.5 max-w-xs">
+            {FOOTER_LINKS.map((l) => (
+              <a
+                key={l.id}
+                href={`#${l.id}`}
+                className="rounded-lg bg-[var(--cream)] text-[#111] text-sm font-medium px-4 py-2 hover:bg-[var(--blue)] hover:text-white transition-colors"
+              >
+                {l.label}
+              </a>
             ))}
           </div>
         </div>
-      </Section>
 
-      <Section id="contact" title="Contact">
-        <p className="text-zinc-400 leading-relaxed mb-10">
-          Open to new opportunities and collaborations — let's build something amazing together.
-        </p>
-
-        <div className="space-y-4">
-          <a href="mailto:ansonantony783@gmail.com" className="flex items-center gap-3 text-zinc-300 hover:text-emerald-400 transition w-fit">
-            <Mail size={17} className="text-zinc-500" />
-            <span>ansonantony783@gmail.com</span>
+        <div>
+          <p className="text-lg mb-5">/Contact</p>
+          <a
+            href="mailto:ansonantony783@gmail.com"
+            className="text-[var(--cream)]/75 hover:text-[var(--blue)] transition-colors"
+          >
+            ansonantony783@gmail.com
           </a>
-          <a href="tel:7907121020" className="flex items-center gap-3 text-zinc-300 hover:text-emerald-400 transition w-fit">
-            <Phone size={17} className="text-zinc-500" />
-            <span>+91 7907121020</span>
-          </a>
-          <a href="https://github.com/ansoncodes" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-zinc-300 hover:text-emerald-400 transition w-fit">
-            <Github size={17} className="text-zinc-500" />
-            <span>github.com/ansoncodes</span>
-          </a>
-          <a href="https://www.linkedin.com/in/anson-codes/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-zinc-300 hover:text-emerald-400 transition w-fit">
-            <Linkedin size={17} className="text-zinc-500" />
-            <span>linkedin.com/in/anson-codes</span>
-          </a>
-          <div className="flex items-center gap-3 text-zinc-300">
-            <MapPin size={17} className="text-zinc-500" />
-            <span>Kochi, Kerala, India</span>
-          </div>
+          <p className="mt-2 text-[var(--cream)]/50 text-sm">Kochi, Kerala, India</p>
         </div>
-      </Section>
+      </div>
+    </div>
 
-      <footer className="px-4 pb-10 relative z-10">
-        <p className="text-center text-zinc-600 text-sm font-mono">© 2026 M A Anson • Built with React & Tailwind CSS</p>
-      </footer>
+    <div className="relative z-10 border-t border-white/10 mx-auto max-w-7xl px-5 sm:px-8 py-5 flex items-center justify-between flex-wrap gap-2 eyebrow text-[var(--cream)]/45">
+      <span>© 2026 M A Anson</span>
+      <span>Built with React &amp; Tailwind</span>
+    </div>
+  </footer>
+);
+
+function App() {
+  return (
+    <div className="min-h-screen bg-[var(--cream)] text-[#111] overflow-x-hidden">
+      <Nav />
+      <main>
+        <Hero />
+        <Services />
+        <Work />
+        <Experience />
+        <Contact />
+      </main>
+      <Footer />
     </div>
   );
 }
