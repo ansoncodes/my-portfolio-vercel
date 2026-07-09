@@ -245,7 +245,7 @@ const Nav = () => {
 };
 
 const Hero = () => (
-  <section id="top" className="relative px-5 sm:px-8 pt-32 sm:pt-40 pb-16">
+  <section id="top" className="relative min-h-svh flex flex-col justify-center px-5 sm:px-8 pt-28 sm:pt-32 pb-16">
     <div className="mx-auto max-w-7xl">
       <Reveal className="flex items-center justify-between eyebrow text-[#111]/60 mb-10">
         <span>Full-Stack &amp; AI Developer</span>
