@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowUpRight, ArrowRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 /* ---------- data ---------- */
 
@@ -65,6 +65,25 @@ const RollingText = ({ children, className = '' }) => (
     </span>
   </span>
 );
+
+/* Circular arrow that flies out top-right and a copy flies in from bottom-left on group hover */
+const ArrowChip = ({ size = 'md', variant = 'solid' }) => {
+  const dims = { sm: 'w-7 h-7', md: 'w-8 h-8', lg: 'w-11 h-11 sm:w-14 sm:h-14' };
+  const icons = { sm: 14, md: 16, lg: 24 };
+  const dim = dims[size];
+  const icon = icons[size];
+  const skin =
+    variant === 'solid'
+      ? 'bg-[var(--cream)] text-[#111]'
+      : 'border border-current/25 text-current group-hover:bg-[var(--blue)] group-hover:border-[var(--blue)] group-hover:text-white';
+  const ease = 'transition-transform duration-[550ms] ease-[cubic-bezier(.76,0,.24,1)]';
+  return (
+    <span className={`relative grid place-items-center rounded-full overflow-hidden shrink-0 ${dim} ${skin}`}>
+      <ArrowUpRight size={icon} className={`absolute ${ease} group-hover:translate-x-[160%] group-hover:-translate-y-[160%]`} />
+      <ArrowUpRight size={icon} className={`absolute ${ease} -translate-x-[160%] translate-y-[160%] group-hover:translate-x-0 group-hover:translate-y-0`} />
+    </span>
+  );
+};
 
 const Reveal = ({ children, delay = 0, className = '', as: Tag = 'div' }) => {
   const ref = useRef(null);
@@ -145,9 +164,7 @@ const Nav = () => {
           className="group flex items-center gap-2 rounded-full bg-[#111] text-[var(--cream)] text-sm font-medium pl-5 pr-2 py-2 hover:bg-[var(--blue)] transition-colors"
         >
           <RollingText>Get in touch</RollingText>
-          <span className="grid place-items-center w-7 h-7 rounded-full bg-[var(--cream)] text-[#111] transition-transform group-hover:rotate-45">
-            <ArrowUpRight size={15} />
-          </span>
+          <ArrowChip size="sm" />
         </a>
       </nav>
     </header>
@@ -188,9 +205,7 @@ const Hero = () => (
             className="group flex items-center gap-2 rounded-full bg-[#111] text-[var(--cream)] font-medium pl-6 pr-2 py-3 hover:bg-[var(--blue)] transition-colors"
           >
             <RollingText>View my work</RollingText>
-            <span className="grid place-items-center w-8 h-8 rounded-full bg-[var(--cream)] text-[#111] transition-transform group-hover:translate-y-0.5">
-              <ArrowRight size={16} />
-            </span>
+            <ArrowChip size="md" />
           </a>
           <a
             href="https://github.com/ansoncodes?tab=repositories"
@@ -276,9 +291,7 @@ const Work = () => (
                     <p className="mt-2 eyebrow text-current/50">{p.tag}</p>
                   </div>
                 </div>
-                <span className="grid place-items-center w-11 h-11 sm:w-14 sm:h-14 rounded-full border border-current/25 shrink-0 transition-transform group-hover:rotate-45 group-hover:border-[var(--blue)] group-hover:bg-[var(--blue)] group-hover:text-white">
-                  <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                </span>
+                <ArrowChip size="lg" variant="outline" />
               </div>
               <div className="mt-6 grid lg:grid-cols-[1fr_auto] gap-4 lg:gap-16 items-end pl-0 sm:pl-16">
                 <p className="max-w-xl text-base sm:text-lg text-current/70 leading-relaxed">{p.desc}</p>
