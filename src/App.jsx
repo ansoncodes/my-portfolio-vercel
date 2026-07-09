@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Menu, X } from 'lucide-react';
 
 /* ---------- data ---------- */
 
 const NAV_LINKS = [
-  { id: 'work', label: 'Work' },
   { id: 'services', label: 'Services' },
+  { id: 'work', label: 'Work' },
   { id: 'experience', label: 'Experience' },
   { id: 'contact', label: 'Contact' },
 ];
@@ -127,46 +127,119 @@ const SectionLabel = ({ index, children }) => (
 /* ---------- sections ---------- */
 
 const Nav = () => {
-  const [hidden, setHidden] = useState(false);
-  const last = useRef(0);
+  const [active, setActive] = useState(null);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    const ids = NAV_LINKS.map((l) => l.id);
     const onScroll = () => {
-      const y = window.scrollY;
-      setHidden(y > 400 && y > last.current);
-      last.current = y;
+      setOpen(false);
+      const doc = document.documentElement;
+      // Measure each section's vertical range, sorted by position (order-independent)
+      const sections = ids
+        .map((id) => {
+          const el = document.getElementById(id);
+          return el ? { id, top: el.offsetTop, bottom: el.offsetTop + el.offsetHeight } : null;
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.top - b.top);
+
+      // At the bottom of the page, the last section wins
+      if (window.innerHeight + window.scrollY >= doc.scrollHeight - 2) {
+        setActive(sections.length ? sections[sections.length - 1].id : null);
+        return;
+      }
+
+      const line = window.scrollY + window.innerHeight * 0.35;
+      // The section whose range contains the reference line is active…
+      let current = sections.find((s) => line >= s.top && line < s.bottom)?.id ?? null;
+      // …otherwise fall back to the nearest section above the line (e.g. gaps)
+      if (!current) {
+        const above = sections.filter((s) => s.top <= line);
+        current = above.length ? above[above.length - 1].id : null;
+      }
+      setActive(current);
     };
+    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
   }, []);
 
   return (
-    <header
-      className={`fixed top-0 inset-x-0 z-50 transition-transform duration-500 ${
-        hidden ? '-translate-y-full' : 'translate-y-0'
-      }`}
-    >
-      <nav className="mx-auto max-w-7xl px-5 sm:px-8 py-4 sm:py-5 flex items-center justify-between">
-        <a href="#top" className="font-display font-800 text-lg tracking-tight" style={{ fontWeight: 800 }}>
+    <header className="fixed top-3 sm:top-5 inset-x-0 z-50 flex flex-col items-center px-4 pointer-events-none">
+      <nav className="pointer-events-auto flex items-center gap-1 rounded-full border border-[#111]/10 bg-[var(--cream)]/80 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.07)] p-1.5 pl-4">
+        <a
+          href="#top"
+          className="font-display tracking-tight text-base pr-2 sm:pr-3"
+          style={{ fontWeight: 800 }}
+        >
           ANSON<span className="text-[var(--blue)]">.</span>
         </a>
 
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+        <div className="hidden sm:flex items-center gap-0.5">
           {NAV_LINKS.map((l) => (
-            <a key={l.id} href={`#${l.id}`} className="text-[#111]/70 hover:text-[#111] transition-colors">
-              <RollingText>{l.label}</RollingText>
+            <a
+              key={l.id}
+              href={`#${l.id}`}
+              className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                active === l.id
+                  ? 'bg-[#111] text-[var(--cream)]'
+                  : 'text-[#111]/70 hover:text-[#111] hover:bg-[#111]/[0.06]'
+              }`}
+            >
+              {l.label}
             </a>
           ))}
         </div>
 
+        {/* desktop CTA */}
         <a
           href="#contact"
-          className="group flex items-center gap-2 rounded-full bg-[#111] text-[var(--cream)] text-sm font-medium pl-5 pr-2 py-2 hover:bg-[var(--blue)] transition-colors"
+          className="hidden sm:flex group items-center gap-1.5 rounded-full bg-[#111] text-[var(--cream)] text-sm font-medium pl-4 pr-1.5 py-1.5 hover:bg-[var(--blue)] transition-colors ml-0.5"
         >
-          <RollingText>Get in touch</RollingText>
+          <span>Let's talk</span>
           <ArrowChip size="sm" />
         </a>
+
+        {/* mobile hamburger */}
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          aria-expanded={open}
+          className="sm:hidden grid place-items-center w-9 h-9 rounded-full bg-[#111] text-[var(--cream)] ml-1"
+        >
+          {open ? <X size={18} /> : <Menu size={18} />}
+        </button>
       </nav>
+
+      {/* mobile dropdown */}
+      <div
+        className={`pointer-events-auto sm:hidden mt-2 w-60 max-w-[calc(100vw-2rem)] origin-top rounded-2xl border border-[#111]/10 bg-[#f3efe8] shadow-[0_10px_40px_rgba(0,0,0,0.14)] overflow-hidden transition-all duration-300 ease-[cubic-bezier(.22,1,.36,1)] ${
+          open ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-2 scale-95 pointer-events-none'
+        }`}
+      >
+        <div className="p-2 flex flex-col gap-0.5">
+          {NAV_LINKS.map((l) => (
+            <a
+              key={l.id}
+              href={`#${l.id}`}
+              onClick={() => setOpen(false)}
+              className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                active === l.id
+                  ? 'bg-[#111] text-[var(--cream)]'
+                  : 'text-[#111]/80 hover:bg-[#111]/[0.06]'
+              }`}
+            >
+              {l.label}
+            </a>
+          ))}
+        </div>
+      </div>
     </header>
   );
 };
